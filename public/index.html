@@ -1,8 +1,51 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="in_ID">
+  <script>
+    localStorage.setItem("urlapi", "http://binar-perjuangan.herokuapp.com/");
+    var jsonDataSiswa = [];
+    function sortTable(n, idTable) {
+      var starti = 1;
+      if (idTable=="tableNilaiSiswa"||idTable=="tabelPresensi"){starti=0}
+      var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+      table = document.getElementById(idTable);
+      switching = true;
+      dir = "asc"; 
+      while (switching) {
+        switching = false;
+        rows = table.rows;
+        for (i = starti; i < (rows.length - 1); i++) {
+          shouldSwitch = false;
+          x = rows[i].getElementsByTagName("TD")[n];
+          y = rows[i + 1].getElementsByTagName("TD")[n];
+          if (dir == "asc") {
+            if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+              shouldSwitch = true;
+              break;
+            }
+          } else if (dir == "desc") {
+            if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+              shouldSwitch = true;
+              break;
+            }
+          }
+        }
+        if (shouldSwitch) {
+          rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+          switching = true;
+          switchcount ++; 
+        } else {
+          if (switchcount == 0 && dir == "asc") {
+            dir = "desc";
+            switching = true;
+          }
+        }
+      }
+    }
+  </script>    
   <head>
     <link type="text/css" rel="stylesheet" href="materialize.min.css">
     <script type="text/javascript" src="jquery-1.9.1.min.js"></script>
+    <script type="text/javascript" src="jquerysession.js"></script>
     <script type="text/javascript" src="materialize.min.js"></script>
     <link href="quicksand.css" rel="stylesheet">
     <link href="icon.css" rel="stylesheet">

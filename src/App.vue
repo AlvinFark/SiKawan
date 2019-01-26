@@ -1,81 +1,108 @@
 <template>
   <div id="app">
-    <sideNav/>
-    <div class="main">
-      <dashboard/>
-      <dataSiswa/>
-      <dataGuru/>
-      <dataKeluhan/>
-    </div>
+    <landingPage/>
+    <login/>
+    <homeGuru/>
+    <homeTU/>
   </div>
 </template>
 
 <script>
-import sideNav from './components/sideNav.vue'
-import dashboard from './components/dashboard.vue'
-import dataSiswa from './components/dataSiswa.vue'
-import dataGuru from './components/dataGuru.vue'
-import dataKeluhan from './components/dataKeluhan.vue'
+import homeTU from './components/tata usaha/homeTU.vue'
+import homeGuru from './components/guru/homeGuru.vue'
+import login from './components/login.vue'
+import landingPage from './components/landingPage.vue'
 export default {
   name: 'app',
   components: {
-    sideNav,
-    dashboard,
-    dataSiswa,
-    dataGuru,
-    dataKeluhan
+    homeTU,
+    homeGuru,
+    login,
+    landingPage
   }
 }
 $( document ).ready(function() {
-  $("#dashboard").show();
-  $("#dataGuru").hide();
-  $("#dataSiswa").hide();
-  $("#dataKelas").hide();
-  $("#dataKeluhan").hide();
-  $(document).on( "click", "#optionDashboard", function() {
-    $("#dashboard").show();
-    $("#dataGuru").hide();
-    $("#dataSiswa").hide();
-    $("#dataKelas").hide();
-    $("#dataKeluhan").hide();
+  var date = new Date();
+  var year = date.getFullYear();
+  var month = date.getMonth();
+  var day = date.getDate();
+  var date = new Date(year, month, day);
+  var date2 = new Date(year-12, month, day);
+  $('.datepicker').datepicker({
+    i18n : {
+      months: [ "Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","Nopember","Desember" ],
+      monthsShort: [ "Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agus","Sep","Okt","Nop","Des" ],
+      weekdays: [ "Minggu","Senin","Selasa","Rabu","Kamis","Jumat","Sabtu" ],
+      weekdaysShort: [ "Min","Sen","Sel","Rab","kam","Jum","Sab" ],
+      weekdaysAbbrev: [ "Mg","Sn","Sl","Rb","Km","jm","Sb" ]
+    },
+    format : "dddd, d mmmm yyyy",
+    defaultDate : date,
+    setDefaultDate : true
+  });
+  $('#formUbahTanggalLahirSiswa').datepicker({
+    format : "dd-mm-yyyy",
+    defaultDate : date2,
+    setDefaultDate : true
   })
-  $(document).on( "click", "#optionDataGuru", function() {
-    $("#dashboard").hide();
-    $("#dataGuru").show();
-    $("#dataSiswa").hide();
-    $("#dataKelas").hide();
-    $("#dataKeluhan").hide();
-  })
-  $(document).on( "click", "#optionDataKeluhan", function() {
-    $("#dashboard").hide();
-    $("#dataGuru").hide();
-    $("#dataSiswa").hide();
-    $("#dataKelas").hide();
-    $("#dataKeluhan").show();
-  })
-  $(document).on( "click", ".clickDataSiswa", function() {
-    $(".optionNav").each(function() {
-      $(this).removeClass("selectedNav");
-    })
-    $("#optionDataSiswa").addClass("selectedNav");
-    $("#dashboard").hide();
-    $("#dataGuru").hide();
-    $("#dataSiswa").show();
-    $("#dataKelas").hide();
-    $("#dataKeluhan").hide();
-  })
+  $('select').formSelect();
+  $('.modal').modal();
+  $('.materialboxed').materialbox();
+  if ($.session.get('role')=='TU'){
+    $(document).trigger('loadHomeTU');
+    $('#homeGuru').hide();
+    $('#homeTU').fadeIn();
+    $('#loginPage').hide();
+    $('#landingPage').hide();
+  } else if ($.session.get('role')=='guru') {
+    $(document).trigger('loadHomeGuru');
+    $('#homeGuru').fadeIn();
+    $('#homeTU').hide();
+    $('#loginPage').hide();
+    $('#landingPage').hide();
+  } else {
+    $.session.clear();
+    $('#homeGuru').hide();
+    $('#homeTU').hide();
+    $('#loginPage').hide();
+    $('#landingPage').fadeIn();
+  }
 })
+$(document).on( "click", ".logout", function() {
+  $(document).trigger('loadLoginPage');
+  $.session.clear();
+})
+$('select').on('contentChanged', function() {
+  $(this).formSelect();
+});
 </script>
 
 <style>
+  ::-webkit-scrollbar {
+    width: 5px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1; 
+  }
+  ::-webkit-scrollbar-thumb {
+    border-radius: 5px;
+    background: #888; 
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #555; 
+  }
   #app {
+    overflow-x: hidden;
     font-family: 'Quicksand' !important;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     color: #2c3e50;
     text-align: center;
-    background-color: #F5F6FA;
     height: 100vh;
+  }
+  #homeTU, #homeGuru{
+    overflow-x: hidden;
+    background-color: #F5F6FA;
   }
   @media only screen and (min-width: 992px){
     .main{
@@ -84,32 +111,13 @@ $( document ).ready(function() {
       padding: 30px;
     }
   }
-  .select-wrapper{
-    background: white !important;
-    border-radius: 5px !important;
-    width: 200px !important;
-    border: 1px solid #cfcfcf !important;
-    padding-left: 10px !important;
+  a{
+    cursor: pointer;
+    text-decoration: none !important;
   }
-  .select-wrapper.select-month, .select-wrapper.select-year{
-    background: none !important;
-    border-radius: 0 !important;
-    width: 100px !important;
-    border: 0 !important;
-    padding-left: 0 !important;
-  }
-  .select-wrapper input.select-dropdown{
-    font-family: 'Quicksand' !important;
-    border-bottom: 0 !important;
-    margin: 0 !important;
-    font-size: 20px !important;
-  }
-  .dropdown-content li>a, .dropdown-content li>span {
-    font-size: 20px;
-    color: #3083FF;
-    display: block;
-    line-height: 22px;
-    padding: 14px 16px;
+  .input-field{
+    margin: 0;
+    border-radius: 5px;
   }
   .datepicker-date-display{
     background-color: #3083FF;
@@ -118,6 +126,7 @@ $( document ).ready(function() {
     background-color: #3083FF !important;
   }
   input{
+    font-family: 'Quicksand' !important;
     border: 0 !important;
     margin: 0 !important;
     padding: 0 10px 0 10px !important;
@@ -131,7 +140,6 @@ $( document ).ready(function() {
   }
   .inputTextContainer{
     height: 47px;
-    margin-top: 7px;
     background-color: white;
     border-radius: 5px;
     width: 200px;
@@ -158,14 +166,18 @@ $( document ).ready(function() {
   }
   table.table>thead th{
     text-align: center !important;
-    border: 5px solid white;
+    border: 5px white;
+    border-style: none solid none solid;
     height: 56px !important;
     padding: 0;
+    font-size: 16px;
   }
   table.table>tbody td{
-    border: 5px solid white;
+    border: 5px white;
+    border-style: none solid none solid;
     height: 48px !important;
     padding: 0;
+    font-size: 16px;
   }
   table.table>tbody td:not(.center-align){
     padding-left: 10px;
@@ -186,13 +198,18 @@ $( document ).ready(function() {
   .tableData>tr>td{
     height: 55px !important;
     padding: 0;
-    font-size: 20px !important;
+    font-size: 18px !important;
+    font-family: 'Quicksand' !important;
   }
   .tableData>tr>td input{
-    font-size: 20px !important;
+    font-size: 18px !important;
+  }
+  .tableData>tr>td textarea{
+    font-size: 18px !important;
+    font-family: 'Quicksand' !important;
   }
   td.select-wrapper input.select-dropdown{
-    font-size: 20px !important;
+    font-size: 18px !important;
   }
   .inputData{
     width: inherit !important;
@@ -204,5 +221,23 @@ $( document ).ready(function() {
   .btn-yellow{
     background-color: #FCA213 !important;
     margin-left: 10px;
+  }
+  .containerFilter{
+    width: 100%;
+    display:flex;
+    margin:59px 0 10px 0;
+    justify-content:space-between;
+  }
+  .inputText{
+    font-family: 'Quicksand';
+  }
+  .logout{
+    cursor: pointer;
+  }
+  .browser-default{
+    font-family: 'Quicksand' !important;
+    font-size: 16px;
+    padding: 2.5px 10px 0 10px;
+    color: #2c3e50;
   }
 </style>
